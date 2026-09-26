@@ -1,0 +1,79 @@
+# Render Blueprint for FULLY AUTOMATED batch production, including publish.
+# CLAUDE.md Section 10 Phase 7 / Section 15. Deploy: push this repo to
+# GitHub, then in Render: New -> Blueprint -> pick the repo.
+#
+# THIS PUBLISHES TO YOUTUBE WITH NO HUMAN REVIEW. --upload is in the start
+# commands below, and upload.py's PUBLISH_STATUS is "public" — every video
+# these cron jobs produce goes live automatically. This was an explicit,
+# confirmed choice (see upload.py's docstring) that overrides CLAUDE.md
+# Section 11's original non-negotiable human-approval rule. If that stops
+# being what you want, delete --upload from both startCommands below (or
+# change PUBLISH_STATUS in upload.py) before your next deploy.
+#
+# Persistent state: a Render Cron Job's filesystem is otherwise ephemeral
+# between runs. Two disks are mounted per service:
+#   /app/videos  — state.json per video (so a crash mid-render doesn't
+#                  redo paid API work on retry)
+#   /app/config  — topics.yaml's done/pending flags, the saved YouTube OAuth
+#                  tokens, and google_client_secret.json. This one matters
+#                  MORE now that publishing is automatic: without it,
+#                  topics.yaml resets to the git repo's version on every
+#                  deploy, and a already-published topic could get produced
+#                  and published a second time.
+# (Render disks aren't available on every plan tier — confirm yours supports
+# two before deploying.)
+#
+# One-time steps that must happen BEFORE the first scheduled run, done once
+# from your own machine, then copied onto the /app/config disk (Render's
+# dashboard has a shell for this):
+#   1. Create a Google Cloud OAuth client (Desktop app type), download it as
+#      google_client_secret.json.
+#   2. `python -m pipeline.upload --authorize --channel en` and `--channel es`
+#      — each opens a browser for a one-time human consent (Google requires
+#      this; it cannot be scripted away). Produces youtube_token_en.json /
+#      youtube_token_es.json.
+#   3. Copy google_client_secret.json + both youtube_token_*.json onto the
+#      /app/config disk at the paths config/channels.yaml expects.
+#
+# Secrets NOT in this file — set them in the Render dashboard (Environment
+# tab) instead, so they're never committed to git:
+#   RUNWAY_API_KEY, ANTHROPIC_API_KEY
+
+services:
+  - type: cron
+    name: stoic-pipeline-es
+    env: docker
+    dockerfilePath: ./Dockerfile
+    schedule: "0 14 * * 1"   # Mondays 14:00 UTC — produces + publishes that week's 3 Spanish videos
+    startCommand: "python -m pipeline.batch --channel es --count 3 --upload"
+    disks:
+      - name: stoic-pipeline-videos-es
+        mountPath: /app/videos
+        sizeGB: 10
+      - name: stoic-pipeline-config-es
+        mountPath: /app/config
+        sizeGB: 1
+    envVars:
+      - key: RUNWAY_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+
+  - type: cron
+    name: stoic-pipeline-en
+    env: docker
+    dockerfilePath: ./Dockerfile
+    schedule: "0 15 * * 1"   # offset an hour from the ES job so they don't compete for local ffmpeg/RAM if Render ever runs them on the same box
+    startCommand: "python -m pipeline.batch --channel en --count 3 --upload"
+    disks:
+      - name: stoic-pipeline-videos-en
+        mountPath: /app/videos
+        sizeGB: 10
+      - name: stoic-pipeline-config-en
+        mountPath: /app/config
+        sizeGB: 1
+    envVars:
+      - key: RUNWAY_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false

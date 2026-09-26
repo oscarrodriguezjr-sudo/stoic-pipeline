@@ -1,0 +1,64 @@
+# Render + overlay style settings (CLAUDE.md Section 7)
+
+image:
+  gen_size: "1920:1080"          # Runway text_to_image ratio
+  upscale_to: [2560, 1440]       # upscale before zooming, avoids Ken Burns jitter
+  low_memory_upscale_to: [2112, 1188]
+  prompt_suffix: >
+    Cinematic painting, epic historical film still, ancient Rome, warm amber
+    light against deep shadows, rich detail, no text, no letters, no watermark.
+
+overlay:
+  font_sizes:
+    caption: 46
+    titlecard_main: 120
+    titlecard_sub: 84
+    title_label: 64
+    title_text: 88
+    quote_line: 74
+    quote_author: 40
+    takeaway: 64
+  letter_spacing_caption: 6
+  drop_shadow:
+    blur: 6
+    color: [0, 0, 0]
+    alpha: 200
+  veil_alpha:
+    titlecard: 150
+    title: 110
+    quote: 150
+
+timing:
+  padding_default: 1.6
+  padding_quote: 2.4
+  padding_closing: 3.0
+  voice_start_delay: 0.7
+  segment_fade: 0.5
+
+zoom:
+  in:  "1+0.0006*on"
+  out: "1.15-0.0006*on"
+  in2: "1.12+0.0005*on"
+
+render:
+  fps: 30
+  resolution: "1920x1080"
+  video_codec: "libx264"
+  preset: "veryfast"
+  crf: 23
+  audio_codec: "aac"
+  audio_bitrate: "160k"
+  sample_rate: 48000
+
+ambient_bed:
+  # aevalsrc formula from CLAUDE.md Section 7 — quiet drone under the voice
+  expr: "0.5*sin(2*PI*55*t)+0.35*sin(2*PI*82.41*t)+0.25*sin(2*PI*110*t)+0.12*sin(2*PI*164.8*t)"
+  tremolo: "f=0.15:d=0.4"
+  lowpass: "f=400"
+  volume: 0.05
+  fade_seconds: 4
+
+loudness:
+  I: -14
+  TP: -1.5
+  LRA: 11

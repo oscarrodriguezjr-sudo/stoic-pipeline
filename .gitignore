@@ -1,0 +1,7 @@
+.env
+videos/
+config/youtube_token_*.json
+config/google_client_secret.json
+__pycache__/
+*.pyc
+debug_voices.py

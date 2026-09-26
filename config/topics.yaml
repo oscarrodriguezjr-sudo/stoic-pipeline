@@ -1,0 +1,148 @@
+# Batch-production manifest (CLAUDE.md Section 9 + Section 10 Phase 7).
+# pipeline/batch.py reads this, picks the next N topics with status "pending"
+# for the requested channel, generates + renders them, and only flips status
+# to "done" after a video's final.mp4 actually exists — a crash mid-topic
+# leaves it "pending" so the next run just retries it (video-level state.json
+# still avoids regenerating any asset that already finished).
+
+topics:
+  - id: 1
+    slug_en: "calm-under-pressure"
+    slug_es: "reglas-estoicas-calma"
+    en: "10 Stoic Rules to Stay Calm Under Pressure"
+    es: "10 Reglas Estoicas Para Mantener la Calma"
+    status_en: pending   # hand-written fixture exists at Script_10_Stoic_Rules_Calm_Under_Pressure.md but was never converted/rendered
+    status_es: done       # rendered manually — see videos/reglas-estoicas-calma/final.mp4
+  - id: 2
+    slug_en: "handle-disrespect"
+    slug_es: "responder-falta-respeto"
+    en: "Marcus Aurelius: How to Handle Disrespect"
+    es: "Marco Aurelio: Cómo Responder a la Falta de Respeto"
+    status_en: pending
+    status_es: pending
+  - id: 3
+    slug_en: "go-silent-everything-changes"
+    slug_es: "quedas-silencio-todo-cambia"
+    en: "When You Go Silent, Everything Changes"
+    es: "Cuando Te Quedas en Silencio, Todo Cambia"
+    status_en: pending
+    status_es: pending
+  - id: 4
+    slug_en: "7-habits-leaders-never-break"
+    slug_es: "7-habitos-nunca-se-rinden"
+    en: "7 Stoic Habits of Leaders Who Never Break"
+    es: "7 Hábitos Estoicos de Quienes Nunca Se Rinden"
+    status_en: pending
+    status_es: pending
+  - id: 5
+    slug_en: "seneca-wasting-time"
+    slug_es: "seneca-perder-tiempo"
+    en: "Seneca on Wasting Time"
+    es: "Séneca: Deja de Perder el Tiempo"
+    status_en: pending
+    status_es: pending
+  - id: 6
+    slug_en: "never-bothered-by-anyone"
+    slug_es: "nada-te-afecte"
+    en: "How to Never Be Bothered by Anyone"
+    es: "Cómo Hacer Que Nada Te Afecte"
+    status_en: pending
+    status_es: pending
+  - id: 7
+    slug_en: "epictetus-control-only-what-you-can"
+    slug_es: "epicteto-controla-lo-que-depende"
+    en: "Epictetus: Control Only What You Can"
+    es: "Epicteto: Controla Solo Lo Que Depende de Ti"
+    status_en: pending
+    status_es: pending
+  - id: 8
+    slug_en: "10-rules-money-wealth"
+    slug_es: "10-reglas-dinero"
+    en: "10 Stoic Rules for Money and Wealth"
+    es: "10 Reglas Estoicas Sobre el Dinero"
+    status_en: pending
+    status_es: pending
+  - id: 9
+    slug_en: "alone-makes-you-stronger"
+    slug_es: "soledad-te-hace-fuerte"
+    en: "Being Alone Makes You Stronger"
+    es: "La Soledad Te Hace Más Fuerte"
+    status_en: pending
+    status_es: pending
+  - id: 10
+    slug_en: "stoic-morning-routine"
+    slug_es: "rutina-matutina-estoica"
+    en: "The Stoic Morning Routine"
+    es: "La Rutina Matutina Estoica"
+    status_en: pending
+    status_es: pending
+  - id: 11
+    slug_en: "stop-explaining-yourself"
+    slug_es: "deja-de-dar-explicaciones"
+    en: "Stop Explaining Yourself to People"
+    es: "Deja de Dar Explicaciones"
+    status_en: pending
+    status_es: pending
+  - id: 12
+    slug_en: "how-stoics-handle-betrayal"
+    slug_es: "estoicos-y-la-traicion"
+    en: "How Stoics Handle Betrayal"
+    es: "Cómo Enfrentan los Estoicos la Traición"
+    status_en: pending
+    status_es: pending
+  - id: 13
+    slug_en: "marcus-aurelius-leading-people"
+    slug_es: "marco-aurelio-liderar-a-otros"
+    en: "Marcus Aurelius on Leading People"
+    es: "Marco Aurelio: Cómo Liderar a Otros"
+    status_en: pending
+    status_es: pending
+  - id: 14
+    slug_en: "signs-mentally-strong"
+    slug_es: "senales-mentalmente-fuerte"
+    en: "8 Signs You Are Becoming Mentally Strong"
+    es: "8 Señales de Que Eres Mentalmente Fuerte"
+    status_en: pending
+    status_es: pending
+  - id: 15
+    slug_en: "amor-fati-setback-into-strength"
+    slug_es: "amor-fati-caida-en-fuerza"
+    en: "Amor Fati: Turn Every Setback Into Strength"
+    es: "Amor Fati: Convierte Cada Caída en Fuerza"
+    status_en: pending
+    status_es: pending
+  - id: 16
+    slug_en: "rules-difficult-family-members"
+    slug_es: "reglas-familiares-dificiles"
+    en: "Stoic Rules for Difficult Family Members"
+    es: "Reglas Estoicas Para Familiares Difíciles"
+    status_en: pending
+    status_es: pending
+  - id: 17
+    slug_en: "discipline-beats-motivation"
+    slug_es: "disciplina-vence-motivacion"
+    en: "Why Discipline Beats Motivation"
+    es: "Por Qué la Disciplina Vence a la Motivación"
+    status_en: pending
+    status_es: pending
+  - id: 18
+    slug_en: "seneca-on-anger"
+    slug_es: "seneca-dominar-la-ira"
+    en: "Seneca on Anger"
+    es: "Séneca: Cómo Dominar la Ira"
+    status_en: pending
+    status_es: pending
+  - id: 19
+    slug_en: "detach-from-outcomes-and-win"
+    slug_es: "suelta-el-resultado-y-ganaras"
+    en: "Detach From Outcomes and Win"
+    es: "Suelta el Resultado y Ganarás"
+    status_en: pending
+    status_es: pending
+  - id: 20
+    slug_en: "stoic-guide-starting-over"
+    slug_es: "guia-estoica-empezar-de-nuevo"
+    en: "The Stoic Guide to Starting Over"
+    es: "Guía Estoica Para Empezar de Nuevo"
+    status_en: pending
+    status_es: pending

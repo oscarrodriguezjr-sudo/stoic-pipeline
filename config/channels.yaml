@@ -1,0 +1,51 @@
+# Per-channel configuration (CLAUDE.md Section 4)
+#
+# NOTE ON VOICE (corrected 2026-09-25, confirmed against runwayml/sdk-python's
+# own type definitions after a live 400 error): the API DOES have a built-in
+# preset library — it's just not listable via GET /voices (that endpoint only
+# lists custom voices you've created, which is why it came back empty and
+# briefly sent this file down a wrong custom-voice-creation path). The 50 real
+# preset names, confirmed from the SDK source: Maya, Arjun, Serene, Bernard,
+# Billy, Mark, Clint, Mabel, Chad, Leslie, Eleanor, Elias, Elliot, Grungle,
+# Brodie, Sandra, Kirk, Kylie, Lara, Lisa, Malachi, Marlene, Martin, Miriam,
+# Monster, Paula, Pip, Rusty, Ragnar, Xylar, Maggie, Jack, Katie, Noah, James,
+# Rina, Ella, Mariah, Frank, Claudia, Niki, Vincent, Kendrick, Myrna, Tom,
+# Wanda, Benjamin, Kiana, Rachel. ("James" — the original Section 3 pick —
+# does exist now, despite Section 14 saying it didn't; the roster isn't
+# static, don't trust either list blindly going forward.)
+# Language is implied by the narration text itself, not a separate parameter,
+# so the SAME preset can likely voice both English and Spanish — but listen
+# to the actual rendered Spanish audio before trusting it for that channel.
+
+channels:
+  en:
+    name: "Stoic Leader Mind"
+    handle: "@StoicLeaderMind"
+    language: "en"
+    max_minutes: 14
+    voice:
+      model: "eleven_multilingual_v2"
+      preset_id: "James"   # matches the original Section 3 plan
+    fonts:
+      label: "assets/fonts/Cinzel[wght].ttf"
+      quote: "assets/fonts/CormorantGaramond-Italic[wght].ttf"
+    colors:
+      gold: [232, 200, 140]
+      ivory: [245, 240, 228]
+    oauth_token_path: "config/youtube_token_en.json"
+
+  es:
+    name: "Estoicismo Para Líderes"
+    handle: "@EstoicismoParaLideres"
+    language: "es"
+    max_minutes: 15   # channel not yet phone-verified — CLAUDE.md Section 1
+    voice:
+      model: "eleven_multilingual_v2"
+      preset_id: "James"   # same preset reused — LISTEN to the rendered Spanish audio before trusting this; swap to another name from the list above if it sounds off
+    fonts:
+      label: "assets/fonts/Cinzel[wght].ttf"
+      quote: "assets/fonts/CormorantGaramond-Italic[wght].ttf"
+    colors:
+      gold: [232, 200, 140]
+      ivory: [245, 240, 228]
+    oauth_token_path: "config/youtube_token_es.json"
