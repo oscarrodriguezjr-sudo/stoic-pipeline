@@ -7,7 +7,7 @@
 # these workers produce goes live automatically. This was an explicit,
 # confirmed choice (see upload.py's docstring) that overrides CLAUDE.md
 # Section 11's original non-negotiable human-approval rule. If that stops
-# being what you want, delete --upload from both startCommands below (or
+# being what you want, delete --upload from both dockerCommands below (or
 # change PUBLISH_STATUS in upload.py) before your next deploy.
 #
 # TWO DEPLOY BUGS FIXED HERE on 2026-09-28, in order, each caught by
@@ -65,7 +65,7 @@ services:
     name: stoic-pipeline-es
     env: docker
     dockerfilePath: ./Dockerfile
-    startCommand: "python -m pipeline.scheduler --channel es --count 3 --upload --hour 14"
+    dockerCommand: "python -m pipeline.scheduler --channel es --count 3 --upload --hour 14"
     disk:
       name: stoic-pipeline-config-es
       mountPath: /app/config
@@ -81,7 +81,7 @@ services:
     env: docker
     dockerfilePath: ./Dockerfile
     # offset an hour from the ES job so they don't compete for local ffmpeg/RAM if Render ever runs them on the same box
-    startCommand: "python -m pipeline.scheduler --channel en --count 3 --upload --hour 15"
+    dockerCommand: "python -m pipeline.scheduler --channel en --count 3 --upload --hour 15"
     disk:
       name: stoic-pipeline-config-en
       mountPath: /app/config
