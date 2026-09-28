@@ -4,24 +4,36 @@
 #
 # THIS PUBLISHES TO YOUTUBE WITH NO HUMAN REVIEW. --upload is in the start
 # commands below, and upload.py's PUBLISH_STATUS is "public" — every video
-# these cron jobs produce goes live automatically. This was an explicit,
+# these workers produce goes live automatically. This was an explicit,
 # confirmed choice (see upload.py's docstring) that overrides CLAUDE.md
 # Section 11's original non-negotiable human-approval rule. If that stops
 # being what you want, delete --upload from both startCommands below (or
 # change PUBLISH_STATUS in upload.py) before your next deploy.
 #
-# Persistent state: a Render Cron Job's filesystem is otherwise ephemeral
-# between runs. Two disks are mounted per service:
+# SERVICE TYPE — changed from `cron` to `worker` on 2026-09-28:
+# Render rejected the original `type: cron` + `disks:` combination with
+# "field disks not found in type file.Service" — Render Cron Jobs cannot
+# mount persistent disks at all (only Background Workers and Private
+# Services can). Since this project's whole state design (state.json,
+# topics.yaml done/pending flags, saved YouTube OAuth tokens) depends on a
+# disk surviving between runs, these are now `type: worker` — one
+# long-running process per channel that stays alive the whole time and
+# schedules itself, instead of Render spinning up a fresh container on a
+# cron schedule. See pipeline/scheduler.py for the self-scheduling loop
+# (runs pipeline.batch every Monday at the given --hour, UTC).
+#
+# Persistent state — two disks are mounted per service:
 #   /app/videos  — state.json per video (so a crash mid-render doesn't
 #                  redo paid API work on retry)
 #   /app/config  — topics.yaml's done/pending flags, the saved YouTube OAuth
 #                  tokens, and google_client_secret.json. This one matters
 #                  MORE now that publishing is automatic: without it,
 #                  topics.yaml resets to the git repo's version on every
-#                  deploy, and a already-published topic could get produced
+#                  deploy, and an already-published topic could get produced
 #                  and published a second time.
 # (Render disks aren't available on every plan tier — confirm yours supports
-# two before deploying.)
+# two before deploying. Background Workers also aren't on Render's free
+# tier — confirm your plan covers two paid worker instances.)
 #
 # One-time steps that must happen BEFORE the first scheduled run, done once
 # from your own machine, then copied onto the /app/config disk (Render's
@@ -40,12 +52,11 @@
 #   RUNWAY_API_KEY, ANTHROPIC_API_KEY
 
 services:
-  - type: cron
+  - type: worker
     name: stoic-pipeline-es
     env: docker
     dockerfilePath: ./Dockerfile
-    schedule: "0 14 * * 1"   # Mondays 14:00 UTC — produces + publishes that week's 3 Spanish videos
-    startCommand: "python -m pipeline.batch --channel es --count 3 --upload"
+    startCommand: "python -m pipeline.scheduler --channel es --count 3 --upload --hour 14"
     disks:
       - name: stoic-pipeline-videos-es
         mountPath: /app/videos
@@ -59,12 +70,12 @@ services:
       - key: ANTHROPIC_API_KEY
         sync: false
 
-  - type: cron
+  - type: worker
     name: stoic-pipeline-en
     env: docker
     dockerfilePath: ./Dockerfile
-    schedule: "0 15 * * 1"   # offset an hour from the ES job so they don't compete for local ffmpeg/RAM if Render ever runs them on the same box
-    startCommand: "python -m pipeline.batch --channel en --count 3 --upload"
+    # offset an hour from the ES job so they don't compete for local ffmpeg/RAM if Render ever runs them on the same box
+    startCommand: "python -m pipeline.scheduler --channel en --count 3 --upload --hour 15"
     disks:
       - name: stoic-pipeline-videos-en
         mountPath: /app/videos
