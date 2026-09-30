@@ -101,6 +101,11 @@ def upload_video(channel_cfg: dict, video_dir: Path, privacy_status: str | None 
             "title": meta["title"],
             "description": meta["description"],
             "tags": meta["tags"],
+            # Education fits this content far better than YouTube's default
+            # (22, People & Blogs) for algorithmic distribution/suggested slots.
+            # metadata.py always sets this; the .get() just tolerates an
+            # older metadata.json left over from before this fix.
+            "categoryId": meta.get("categoryId", "27"),
         },
         "status": {"privacyStatus": status, "selfDeclaredMadeForKids": False},
     }

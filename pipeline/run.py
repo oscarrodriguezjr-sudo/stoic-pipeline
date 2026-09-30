@@ -184,7 +184,7 @@ def run_video(channel: str, scenes_path: Path, video_id: str) -> int:
     # use the image from the first "title"-type scene as the thumbnail source
     thumb_scene = next((s for s in scenes["scenes"] if s["overlay"]["type"] == "title"), scenes["scenes"][0])
     make_variants(images[thumb_scene["image"]], scenes["title"], channel_cfg, video_dir)
-    build_metadata(scenes, segment_paths, channel_cfg, video_dir / "metadata.json")
+    build_metadata(scenes, segment_paths, channel_cfg, video_dir / "metadata.json", video_id=video_id)
 
     print(f"\n=== DONE: {final_path} ===")
     print(state.summary())
